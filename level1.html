@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Advice Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+ 
+    body {
+      background: radial-gradient(circle at bottom, #0d0d2b, #000000);
+      overflow: hidden;
+    }
+    .stars {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      animation: twinkle 2s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center h-screen relative">
+
+  <script>
+    for (let i = 0; i < 100; i++) {
+      let star = document.createElement("div");
+      star.className = "stars";
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
+      document.body.appendChild(star);
+    }
+  </script>
+
+ 
+  <div class="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl text-center max-w-lg w-full border border-white/20">
+    <h1 class="text-3xl font-extrabold text-cyan-300 mb-10 drop-shadow-lg tracking-wide">
+      Advice Generator
+    </h1>
+    <p id="adviceText" class="text-lg text-cyan-100 italic mb-12 transition-all duration-500">
+      Click the button to get cosmic wisdom.
+    </p>
+    <button
+      id="adviceBtn"
+      class="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 
+             text-white font-bold py-3 px-10 rounded-full shadow-lg transform hover:scale-110 
+             hover:shadow-cyan-400 transition-all duration-300 tracking-wide"
+    >
+       give me advice
+    </button>
+  </div>
+
+  <script>
+    const adviceText = document.getElementById("adviceText");
+    const adviceBtn = document.getElementById("adviceBtn");
+
+    adviceBtn.addEventListener("click", async () => {
+      adviceText.innerText = " Searching for advice...";
+
+      try {
+        const res = await fetch("https://api.adviceslip.com/advice");
+        const data = await res.json();
+
+        console.log({
+          "slip": {
+            "id": data.slip.id,
+            "advice": data.slip.advice
+          }
+        });
+
+        adviceText.style.opacity = 0;
+        setTimeout(() => {
+          adviceText.innerText = `"${data.slip.advice}"`;
+          adviceText.style.opacity = 1;
+        }, 400);
+      } catch (err) {
+        adviceText.innerText = "❌ Connection lost. Try again.";
+        console.error("Error fetching advice:", err);
+      }
+    });
+  </script>
+
+</body>
+</html>
